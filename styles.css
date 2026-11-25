@@ -49,6 +49,14 @@
   --gutter: clamp(3rem, 3.9vw, 4rem);
   --header-height: 5.5rem;
   --ease-menu: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-reveal: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-return: cubic-bezier(0.37, 0, 0.63, 1);
+  --motion-feedback: 180ms;
+  --motion-ink: 220ms;
+  --motion-panel-in: 340ms;
+  --motion-panel-out: 270ms;
+  --motion-heading: 640ms;
+  --motion-photo: 850ms;
 }
 
 *, *::before, *::after {
@@ -99,6 +107,7 @@ a {
   z-index: -1;
   inset: 0;
   display: block;
+  overflow: hidden;
 }
 
 .stage-photo img {
@@ -107,6 +116,7 @@ a {
   block-size: 100%;
   object-fit: cover;
   object-position: 77% center;
+  transform-origin: 76% 46%;
 }
 
 .site-header {
@@ -163,12 +173,6 @@ a {
   white-space: nowrap;
   cursor: pointer;
   letter-spacing: 0.01em;
-  text-underline-offset: 0.36em;
-}
-
-.site-nav button:active {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
 }
 
 .hero {
@@ -190,8 +194,11 @@ a {
   text-wrap: balance;
 }
 
-.hero-accent {
+.hero-line {
   display: block;
+}
+
+.hero-accent {
   margin-block-start: -0.045em;
   margin-inline-start: -0.035em;
   font-size: 1.25em;
@@ -209,18 +216,31 @@ a {
 }
 
 .booking {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   justify-content: center;
   align-items: center;
   min-inline-size: 12rem;
   min-block-size: 3.25rem;
   padding: 0.7rem 1.75rem;
+  overflow: hidden;
   border-radius: 2rem;
   background-color: var(--color-paper);
   color: var(--color-ink);
   font-size: 0.875rem;
   font-weight: 500;
-  transition: background-color 150ms ease;
+}
+
+.booking::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-color: var(--color-paper-hover);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform var(--motion-ink) var(--ease-reveal);
+  content: "";
 }
 
 .header-booking {
@@ -239,19 +259,35 @@ a {
   border: 0;
   background: transparent;
   font: 400 0.875rem/1.25 var(--font-body);
-  text-underline-offset: 0.32em;
   white-space: nowrap;
   cursor: pointer;
 }
 
 .works-action svg {
   flex: none;
-  transition: transform 160ms var(--ease-menu);
+  transition: transform var(--motion-ink) var(--ease-reveal);
 }
 
-.works-action:active {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
+.motion-label {
+  position: relative;
+  display: block;
+}
+
+.motion-label::after {
+  position: absolute;
+  inset: auto 0 -0.18em;
+  block-size: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--motion-ink) var(--ease-reveal);
+  content: "";
+}
+
+:is(.site-nav button, .works-action):active .motion-label::after,
+:is(.site-nav button, .works-action):focus-visible .motion-label::after {
+  transform: scaleX(1);
+  transition-duration: 0ms;
 }
 
 .close-button {
@@ -322,12 +358,12 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
   inset: 0;
   background: var(--color-ink);
   transform: translateX(100%);
-  transition: transform 260ms ease-in-out;
+  transition: transform var(--motion-panel-out) var(--ease-return);
 }
 
 .mobile-menu.is-visible .menu-panel {
   transform: translateX(0);
-  transition: transform 320ms var(--ease-menu);
+  transition: transform var(--motion-panel-in) var(--ease-menu);
 }
 
 .menu-content {
@@ -386,7 +422,7 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
 }
 
 .menu-close span {
-  transition: transform 200ms var(--ease-menu), opacity 140ms ease;
+  transition: transform var(--motion-ink) var(--ease-menu), opacity var(--motion-feedback) var(--ease-return);
 }
 
 .mobile-menu.is-visible .menu-close span:first-child {
@@ -428,11 +464,34 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
   min-block-size: 2.75rem;
   font: 400 clamp(2.65rem, 10vw, 4rem)/0.98 var(--font-display);
   letter-spacing: -0.028em;
-  text-underline-offset: 0.14em;
 }
 
+.menu-links li,
 .menu-footer {
+  opacity: 0.48;
+  transition: opacity var(--motion-feedback) var(--ease-reveal);
+}
+
+.menu-links li:nth-child(1) { --menu-cue: 30ms; }
+.menu-links li:nth-child(2) { --menu-cue: 56ms; }
+.menu-links li:nth-child(3) { --menu-cue: 79ms; }
+.menu-links li:nth-child(4) { --menu-cue: 99ms; }
+.menu-links li:nth-child(5) { --menu-cue: 116ms; }
+
+.menu-footer {
+  --menu-cue: 138ms;
   flex: none;
+}
+
+.mobile-menu.is-visible :is(.menu-links li, .menu-footer) {
+  opacity: 1;
+  transition-delay: var(--menu-cue);
+}
+
+.mobile-menu[data-keyboard] :is(.menu-links li, .menu-footer),
+.mobile-menu :is(.menu-links li, .menu-footer):focus-within {
+  opacity: 1;
+  transition: none;
 }
 
 .section-notice {
@@ -495,28 +554,97 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .site-nav button:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-  }
-
-  .works-action:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
+  :is(.site-nav button, .works-action):hover .motion-label::after {
+    transform: scaleX(1);
   }
 
   .works-action:hover svg {
-    transform: translateX(3px);
+    transform: translateX(4px);
   }
 
-  .booking:hover {
-    background-color: var(--color-paper-hover);
+  .booking:hover::before {
+    transform: scaleY(1);
   }
 }
 
-.booking:active {
-  background-color: var(--color-paper-pressed);
+.works-action:active svg {
+  transform: translateX(1px);
   transition-duration: 0ms;
+}
+
+.booking:active::before {
+  background-color: var(--color-paper-pressed);
+  transform: scaleY(1);
+  transition-duration: 0ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stage-photo img {
+    animation: portrait-settle var(--motion-photo) var(--ease-reveal);
+  }
+
+  .hero-line {
+    animation: line-reveal var(--motion-heading) var(--ease-reveal) 45ms backwards;
+  }
+
+  .hero-accent {
+    animation-delay: 125ms;
+  }
+
+  .site-header {
+    animation: interface-in 360ms var(--ease-reveal) 90ms backwards;
+  }
+
+  .hero-actions {
+    animation: actions-in 380ms var(--ease-reveal) 280ms backwards;
+  }
+
+  /* Keep the keyboard target in its final position even during the entrance. */
+  :is(.site-header, .hero-actions):has(:focus-visible) {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@keyframes portrait-settle {
+  from {
+    transform: scale(1.045);
+    opacity: 0.78;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes line-reveal {
+  from {
+    clip-path: inset(100% -0.16em 0);
+    transform: translateY(0.18em);
+  }
+
+  to {
+    clip-path: inset(-0.18em -0.16em -0.23em);
+    transform: translateY(0);
+  }
+}
+
+@keyframes interface-in {
+  from { opacity: 0.05; }
+  to { opacity: 1; }
+}
+
+@keyframes actions-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 49.99rem), (max-width: 60rem) and (orientation: portrait) {
@@ -624,6 +752,7 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
 @media (max-width: 60rem) and (orientation: portrait) {
   .stage-photo img {
     object-position: 68.4% center;
+    transform-origin: 64% 44%;
   }
 }
 
@@ -634,17 +763,21 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .booking,
+  .booking::before,
+  .motion-label::after,
   .works-action svg,
   .hero-actions,
   .menu-panel,
   .mobile-menu.is-visible .menu-panel,
   .menu-close span,
+  .menu-links li,
+  .menu-footer,
+  .mobile-menu.is-visible :is(.menu-links li, .menu-footer),
   .section-notice {
     transition: none;
   }
 
-  .works-action:hover svg {
+  .works-action:is(:hover, :active) svg {
     transform: none;
   }
 }

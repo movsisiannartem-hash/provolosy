@@ -105,7 +105,8 @@ if (typeof menu.showModal === 'function') {
     if (showNotice) openNotice(navButton);
   }
 
-  function showMenu() {
+  function showMenu(event) {
+    menu.toggleAttribute('data-keyboard', event.detail === 0);
     menuClose.setAttribute('aria-label', 'Закрыть меню');
 
     if (menu.open) {
@@ -128,9 +129,9 @@ if (typeof menu.showModal === 'function') {
   }
 
   toggle.addEventListener('click', showMenu);
-  menuClose.addEventListener('click', () => {
+  menuClose.addEventListener('click', event => {
     if (closingMenu) {
-      showMenu();
+      showMenu(event);
     } else {
       closeMenu();
     }
