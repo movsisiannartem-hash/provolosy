@@ -225,7 +225,7 @@ a {
 
 .header-booking {
   justify-self: end;
-  min-inline-size: 9.125rem;
+  min-inline-size: 7.75rem;
   min-block-size: 2.75rem;
   padding-inline: 1.375rem;
 }
@@ -294,6 +294,7 @@ body:has(.mobile-menu[open]) {
 }
 
 .mobile-menu {
+  --menu-header-block: calc(var(--header-height) + env(safe-area-inset-top));
   position: fixed;
   inset: 0;
   inline-size: 100%;
@@ -312,30 +313,96 @@ body:has(.mobile-menu[open]) {
   background: transparent;
 }
 
-.menu-panel {
-  display: flex;
-  flex-direction: column;
-  block-size: 100%;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding-block: env(safe-area-inset-top) max(clamp(1.5rem, 5dvh, 3.25rem), env(safe-area-inset-bottom));
-  padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
-  background: var(--color-ink);
-  transform: translateX(100%);
-  transition: transform 230ms var(--ease-menu);
+body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
+  visibility: hidden;
 }
 
-.menu-panel.is-visible {
+.menu-panel {
+  position: absolute;
+  inset: 0;
+  background: var(--color-ink);
+  transform: translateX(100%);
+  transition: transform 260ms ease-in-out;
+}
+
+.mobile-menu.is-visible .menu-panel {
   transform: translateX(0);
-  transition-duration: 300ms;
+  transition: transform 320ms var(--ease-menu);
+}
+
+.menu-content {
+  position: absolute;
+  inset: var(--menu-header-block) 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block-end: max(clamp(1.5rem, 5dvh, 3.25rem), env(safe-area-inset-bottom));
+  padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
 }
 
 .menu-header {
+  position: absolute;
+  z-index: 1;
+  inset: 0 0 auto;
   display: flex;
-  flex: none;
   align-items: center;
   justify-content: space-between;
-  min-block-size: var(--header-height);
+  min-block-size: var(--menu-header-block);
+  padding-block-start: env(safe-area-inset-top);
+  padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
+}
+
+.menu-icon {
+  position: relative;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.menu-icon:focus-visible {
+  outline-offset: 0;
+}
+
+.menu-icon span {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  inline-size: 1.375rem;
+  block-size: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.menu-icon span:first-child {
+  transform: translate(-50%, calc(-50% - 5px));
+}
+
+.menu-icon span:last-child {
+  transform: translate(-50%, calc(-50% + 5px));
+}
+
+.menu-close span {
+  transition: transform 200ms var(--ease-menu), opacity 140ms ease;
+}
+
+.mobile-menu.is-visible .menu-close span:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.mobile-menu.is-visible .menu-close span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu.is-visible .menu-close span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.menu-icon:active {
+  opacity: 0.72;
 }
 
 .menu-wordmark {
@@ -380,13 +447,20 @@ body:has(.mobile-menu[open]) {
   border-radius: 3px;
   background: var(--color-ink);
   color: var(--color-paper);
+  align-items: center;
+  gap: clamp(0.45rem, 2.2vw, 1rem);
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
   transition: opacity 150ms ease, transform 180ms var(--ease-menu);
+  transition: opacity 150ms ease, transform 180ms var(--ease-menu), display 180ms allow-discrete, overlay 180ms allow-discrete;
 }
 
 .section-notice:is(:popover-open, [data-visible]) {
   display: flex;
-  align-items: center;
-  gap: clamp(0.45rem, 2.2vw, 1rem);
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 @starting-style {
@@ -408,6 +482,11 @@ body:has(.mobile-menu[open]) {
   min-block-size: 2.75rem;
   padding-inline: clamp(0.875rem, 3.6vw, 1.25rem);
   font-size: 0.8125rem;
+}
+
+.notice-booking:focus-visible {
+  outline-color: var(--color-ink);
+  outline-offset: -4px;
 }
 
 .notice-close {
@@ -444,6 +523,7 @@ body:has(.mobile-menu[open]) {
   :root {
     --gutter: clamp(1.25rem, 5.65vw, 2.5rem);
     --header-height: 4.5rem;
+    --hero-bottom: clamp(2rem, 7.9svh, 4.75rem);
   }
 
   .site-header {
@@ -468,42 +548,31 @@ body:has(.mobile-menu[open]) {
     display: grid;
   }
 
-  .menu-toggle {
-    position: relative;
-    place-content: center end;
-    gap: 4px;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
-    padding: 0 0.25rem 0 0;
-    border: 0;
-    border-radius: 2px;
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .menu-toggle span {
-    display: block;
-    inline-size: 1.375rem;
-    block-size: 1px;
-    background: currentColor;
-  }
-
-  .menu-toggle:active {
-    opacity: 0.72;
-  }
-
   .header-booking {
     display: none;
   }
 
   .section-notice {
-    inset-block-end: max(0.5rem, env(safe-area-inset-bottom));
-    padding-block: 0.25rem;
+    inset-block-end: calc(var(--hero-bottom) + env(safe-area-inset-bottom));
+    inset-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
+    inline-size: auto;
+    max-inline-size: 26rem;
+    margin-inline: 0;
+    padding: 0.25rem 0.25rem 0.25rem clamp(0.625rem, 3.2vw, 1rem);
+    gap: clamp(0.25rem, 1.5vw, 0.75rem);
+  }
+
+  .section-notice p {
+    flex: 1;
+  }
+
+  .notice-booking {
+    padding-inline: clamp(0.75rem, 3.6vw, 1.25rem);
   }
 
   .hero {
     justify-content: flex-end;
-    padding-block: 2.25rem calc(clamp(2rem, 7.9svh, 4.75rem) + env(safe-area-inset-bottom));
+    padding-block: 2.25rem calc(var(--hero-bottom) + env(safe-area-inset-bottom));
     padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
   }
 
@@ -521,6 +590,17 @@ body:has(.mobile-menu[open]) {
   .hero-actions {
     column-gap: clamp(0.875rem, 4.6vw, 1.5rem);
     margin-block-start: 1.875rem;
+    transition: opacity 150ms ease 100ms;
+  }
+
+  .hero-actions:has(:focus-visible) {
+    transition-delay: 0ms;
+  }
+
+  body:has(.section-notice:is(:popover-open, [data-visible])) .hero-actions {
+    visibility: hidden;
+    opacity: 0;
+    transition: none;
   }
 
   :is(.hero-actions, .menu-footer) .booking {
@@ -541,12 +621,6 @@ body:has(.mobile-menu[open]) {
   }
 }
 
-@media (max-width: 49.99rem) and (max-height: 47rem) {
-  body:has(.section-notice:is(:popover-open, [data-visible])) .hero-actions {
-    visibility: hidden;
-  }
-}
-
 @media (max-width: 60rem) and (orientation: portrait) {
   .stage-photo img {
     object-position: 68.4% center;
@@ -554,16 +628,18 @@ body:has(.mobile-menu[open]) {
 }
 
 @media (max-width: 49.99rem) and (max-height: 41rem) {
-  .hero {
-    padding-block-end: calc(clamp(2rem, 6.3svh, 4rem) + env(safe-area-inset-bottom));
+  :root {
+    --hero-bottom: clamp(2rem, 6.3svh, 4rem);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .booking,
   .works-action svg,
+  .hero-actions,
   .menu-panel,
-  .menu-panel.is-visible,
+  .mobile-menu.is-visible .menu-panel,
+  .menu-close span,
   .section-notice {
     transition: none;
   }

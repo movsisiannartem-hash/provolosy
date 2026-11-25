@@ -18,7 +18,7 @@
           <img src="assets/wordmark.webp" alt="" width="540" height="102">
         </a>
 
-        <button class="menu-toggle" type="button" aria-controls="mobile-menu" aria-haspopup="dialog" aria-expanded="false" aria-label="Открыть меню">
+        <button class="menu-toggle menu-icon" type="button" aria-controls="mobile-menu" aria-haspopup="dialog" aria-expanded="false" aria-label="Открыть меню">
           <span></span><span></span><span></span>
         </button>
 
@@ -55,14 +55,18 @@
     </div>
 
     <dialog class="mobile-menu" id="mobile-menu" aria-label="Меню">
+      <div class="menu-header">
+        <img class="menu-wordmark" src="assets/wordmark.webp" alt="ProВолосы" width="540" height="102">
+        <button class="menu-close menu-icon" type="button" aria-label="Закрыть меню" autofocus>
+          <span></span><span></span><span></span>
+        </button>
+      </div>
       <div class="menu-panel">
-        <div class="menu-header">
-          <img class="menu-wordmark" src="assets/wordmark.webp" alt="ProВолосы" width="540" height="102">
-          <button class="close-button menu-close" type="button" aria-label="Закрыть меню" autofocus></button>
-        </div>
-        <div class="menu-links"></div>
-        <div class="menu-footer">
-          <a class="booking" href="tel:+79964504847">Записаться</a>
+        <div class="menu-content">
+          <div class="menu-links"></div>
+          <div class="menu-footer">
+            <a class="booking" href="tel:+79964504847">Записаться</a>
+          </div>
         </div>
       </div>
     </dialog>

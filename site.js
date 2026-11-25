@@ -41,13 +41,17 @@ if (!hasNativeNotice) {
 if (typeof menu.showModal === 'function') {
   const navigation = document.getElementById('site-nav');
   const panel = menu.querySelector('.menu-panel');
+  const menuClose = menu.querySelector('.menu-close');
   const menuLinks = menu.querySelector('.menu-links');
   const desktopBooking = document.querySelector('.header-booking');
   const compactLayout = matchMedia('(max-width: 49.99rem), (max-width: 60rem) and (orientation: portrait)');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let openingFrame;
   let closingMenu;
 
   function finishClose() {
-    panel.classList.remove('is-visible');
+    cancelAnimationFrame(openingFrame);
+    menu.classList.remove('is-visible');
     menu.close();
     toggle.setAttribute('aria-expanded', 'false');
   }
@@ -55,10 +59,15 @@ if (typeof menu.showModal === 'function') {
   function closeMenu(showNotice = false) {
     if (!menu.open || closingMenu) return;
 
-    panel.classList.remove('is-visible');
+    cancelAnimationFrame(openingFrame);
+    menu.classList.remove('is-visible');
+    menuClose.setAttribute('aria-label', 'Открыть меню');
+
     const closure = { showNotice };
     closingMenu = closure;
-    const motion = panel.getAnimations().map(animation => animation.finished);
+    const motion = [panel, menuClose].flatMap(element =>
+      element.getAnimations({ subtree: true }).map(animation => animation.finished)
+    );
 
     Promise.allSettled(motion).then(() => {
       if (closingMenu !== closure) return;
@@ -96,15 +105,36 @@ if (typeof menu.showModal === 'function') {
     if (showNotice) openNotice(navButton);
   }
 
-  toggle.addEventListener('click', () => {
+  function showMenu() {
+    menuClose.setAttribute('aria-label', 'Закрыть меню');
+
+    if (menu.open) {
+      closingMenu = undefined;
+      menu.classList.add('is-visible');
+      return;
+    }
+
     menu.showModal();
     toggle.setAttribute('aria-expanded', 'true');
-    // Commit the offscreen position before starting the transition.
-    panel.getBoundingClientRect();
-    panel.classList.add('is-visible');
-  });
+    if (reducedMotion.matches) {
+      menu.classList.add('is-visible');
+      return;
+    }
 
-  menu.querySelector('.menu-close').addEventListener('click', () => closeMenu());
+    // Give the newly opened dialog a rendered frame before moving its panel.
+    openingFrame = requestAnimationFrame(() => {
+      openingFrame = requestAnimationFrame(() => menu.classList.add('is-visible'));
+    });
+  }
+
+  toggle.addEventListener('click', showMenu);
+  menuClose.addEventListener('click', () => {
+    if (closingMenu) {
+      showMenu();
+    } else {
+      closeMenu();
+    }
+  });
   menu.addEventListener('cancel', event => {
     event.preventDefault();
     closeMenu();
