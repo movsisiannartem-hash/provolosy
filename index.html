@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#5f4734">
+    <title>ProВолосы, студия волос в Воронеже</title>
+    <meta name="description" content="Студия волос ProВолосы в Воронеже.">
+    <link rel="preload" href="assets/fonts/cormorant-regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/cormorant-italic.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="stage">
+      <header class="site-header">
+        <a class="wordmark" href="./" aria-label="ProВолосы, главная">
+          <img src="assets/wordmark.webp" alt="" width="540" height="102">
+        </a>
+
+        <button class="menu-toggle" type="button" popovertarget="site-nav" aria-label="Меню">
+          <span></span><span></span><span></span>
+        </button>
+
+        <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+          <ul>
+            <li><a href="https://vk.com/provolosy_vrn">О студии</a></li>
+            <li><a href="https://yandex.com/maps/org/provolosy/123126037039/prices/?lang=ru">Услуги</a></li>
+            <li><a href="https://voronezh.gdekrasa.ru/studiya-krasoty-provolosy">Обучение</a></li>
+            <li><a href="https://yandex.com/maps/org/provolosy/123126037039/gallery/?lang=ru">Работы</a></li>
+            <li><a href="https://yandex.com/maps/org/provolosy/123126037039/?lang=ru">Контакты</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <main class="hero">
+        <picture class="stage-photo" aria-hidden="true">
+          <source media="(max-width: 49.99rem) and (orientation: portrait)" srcset="assets/hero-portrait.webp">
+          <img src="assets/hero.webp" alt="" width="1816" height="866" fetchpriority="high">
+        </picture>
+
+        <h1>У волос свой <span class="hero-accent">характер.</span></h1>
+        <a class="booking" href="tel:+79964504847">Записаться</a>
+      </main>
+    </div>
+
+    <script>
+      const navigation = document.getElementById('site-nav');
+      if (typeof navigation.showPopover === 'function') {
+        const compactLayout = matchMedia('(max-width: 49.99rem)');
+        const firstLink = navigation.querySelector('a');
+        const updateNavigation = () => {
+          if (compactLayout.matches) {
+            navigation.setAttribute('popover', 'auto');
+            firstLink.setAttribute('autofocus', '');
+          } else {
+            firstLink.removeAttribute('autofocus');
+            navigation.removeAttribute('popover');
+          }
+        };
+
+        compactLayout.addEventListener('change', updateNavigation);
+        navigation.addEventListener('toggle', event => {
+          if (event.newState === 'closed' && navigation.contains(document.activeElement)) {
+            document.querySelector('.menu-toggle').focus({ preventScroll: true });
+          }
+        });
+        updateNavigation();
+      }
+    </script>
+  </body>
+</html>
