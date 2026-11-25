@@ -12,7 +12,7 @@ function openNotice(trigger) {
 
   noticeTrigger = trigger;
   notice.setAttribute('data-visible', '');
-  notice.querySelector('.notice-booking').focus({ preventScroll: true });
+  notice.focus({ preventScroll: true });
 }
 
 if (!hasNativeNotice) {
