@@ -180,15 +180,22 @@ a {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-block: max(2.5rem, calc(41svh - var(--header-height))) max(3rem, env(safe-area-inset-bottom));
-  padding-inline: max(12.2vw, (100% - 94.5rem) / 2 + 3rem, env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
+  justify-content: flex-end;
+  padding-block: clamp(1.25rem, 4svh, 2.5rem) calc(clamp(1.75rem, 7.8svh, 5.75rem) + env(safe-area-inset-bottom));
+  padding-inline: max(6vw, (100% - 105rem) / 2 + 2rem, env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
+}
+
+.hero-location {
+  margin: 0 0 clamp(0.875rem, 2.2svh, 1.375rem);
+  font-size: clamp(0.9375rem, 1.3vw, 1.1875rem);
+  line-height: 1.35;
 }
 
 .hero h1 {
   margin: 0;
   min-inline-size: 0;
   overflow-wrap: break-word;
-  font: 400 clamp(4.1rem, 7.15vw, 7.75rem)/0.92 var(--font-display);
+  font: 400 clamp(3rem, min(7.5vw, 13svh), 8rem)/0.92 var(--font-display);
   font-synthesis: none;
   letter-spacing: -0.031em;
   text-wrap: balance;
@@ -212,7 +219,7 @@ a {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem clamp(1.15rem, 2.45vw, 2.25rem);
-  margin-block-start: clamp(2rem, 3.2vw, 2.875rem);
+  margin-block-start: clamp(1.5rem, 4svh, 2.625rem);
 }
 
 .booking {
@@ -243,11 +250,19 @@ a {
   content: "";
 }
 
+.hero-actions .booking {
+  min-inline-size: 13.25rem;
+  min-block-size: 3.625rem;
+  font-size: 1rem;
+}
+
 .header-booking {
+  display: flex;
+  align-items: center;
   justify-self: end;
-  min-inline-size: 7.75rem;
   min-block-size: 2.75rem;
-  padding-inline: 1.375rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
 }
 
 .works-action {
@@ -258,7 +273,7 @@ a {
   padding: 0;
   border: 0;
   background: transparent;
-  font: 400 0.875rem/1.25 var(--font-body);
+  font: 400 1rem/1.25 var(--font-body);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -284,8 +299,8 @@ a {
   content: "";
 }
 
-:is(.site-nav button, .works-action):active .motion-label::after,
-:is(.site-nav button, .works-action):focus-visible .motion-label::after {
+:is(.site-nav button, .works-action, .header-booking):active .motion-label::after,
+:is(.site-nav button, .works-action, .header-booking):focus-visible .motion-label::after {
   transform: scaleX(1);
   transition-duration: 0ms;
 }
@@ -557,7 +572,7 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  :is(.site-nav button, .works-action):hover .motion-label::after {
+  :is(.site-nav button, .works-action, .header-booking):hover .motion-label::after {
     transform: scaleX(1);
   }
 
@@ -584,6 +599,10 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
 @media (prefers-reduced-motion: no-preference) {
   .stage-photo img {
     animation: portrait-settle var(--motion-photo) var(--ease-reveal);
+  }
+
+  .hero-location {
+    animation: interface-in 360ms var(--ease-reveal) 65ms backwards;
   }
 
   .hero-line {
@@ -679,7 +698,8 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
     display: grid;
   }
 
-  .header-booking {
+  .header-booking,
+  .hero-location {
     display: none;
   }
 
@@ -737,6 +757,11 @@ body:has(.mobile-menu[open]) .site-header :is(.wordmark, .menu-toggle) {
   :is(.hero-actions, .menu-footer) .booking {
     min-inline-size: 10.875rem;
     min-block-size: 3.1875rem;
+    font-size: 0.875rem;
+  }
+
+  .works-action {
+    font-size: 0.875rem;
   }
 }
 
